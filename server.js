@@ -112,6 +112,24 @@ router.get('/track/find/:name', cors(), async (req, res) => {
     }
 });
 
+// 5. Find artists based on matching artist name
+router.get('/artist/find/:name', cors(), async (req, res) => {
+    let inputName = req.params.name.trim();
+    try {
+
+        let foundArtist = artists.filter(artist => {
+            return artist.artist_name.toString().toLowerCase().includes(inputName.toLowerCase())
+        });
+        if(foundArtist.length){
+            res.status(200).send(foundArtist);
+        } else {
+            res.status(404).send('Artist not found with given name!');
+        }
+    } catch(err) {
+        res.status(500).send('Error fetching artist details!')
+    }
+});
+
 //Register All router
 app.use(apiRoute, router);
 
