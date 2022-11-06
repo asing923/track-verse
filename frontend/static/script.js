@@ -526,3 +526,116 @@ async function createPlaylist() {
     }
 }
 
+function loadAllCustomPlaylists(sortParam) {
+    const url = rootApiPath + '/allCustomPlayLists';
+    const newUrl = url;
+
+    fetch(
+        newUrl,
+        {
+            headers: { "Content-Type": "application/json", "SortBy": sortParam },
+            method: "GET"
+        }
+    )
+        .then(playlists => playlists.json()
+            .then(playlists => {
+                console.log(playlists)
+                populatePlaylistData(playlists);
+            }))
+        .catch(err => {
+            console.log('Error fetching the playlists', err)
+        })
+}
+
+function populatePlaylistData(playlists) {
+
+    let maintrackContainer = document.getElementById('playlist-details');
+    let primaryContainer = document.createElement('div');
+    primaryContainer.id = 'primary-container-3';
+
+    let label = document.getElementById('custom-list-count');
+    label.appendChild(document.createTextNode('Custom Playlist Count: ' + playlists.length + '\u00A0'));
+
+    let count = 0;
+    playlists.forEach(playlist => {
+        count = count + 1;
+        let playlistContainer = document.createElement('div');
+        playlistContainer.classList.add('track-container')
+        playlistContainer.id = count;
+        let playlistName = document.createElement('div');
+        playlistName.id = 'track-name';
+        playlistName.classList.add('track-name')
+
+        let playlistNameLabel = document.createElement('span');
+        playlistNameLabel.classList.add('track-name-label')
+        playlistNameLabel.appendChild(document.createTextNode('Playlist Name: '));
+
+        let playlistNameValue = document.createElement('span');
+        playlistNameValue.classList.add('track-name-label-value')
+        playlistNameValue.appendChild(document.createTextNode(capitalFirstCase(playlist.name)));
+        playlistName.appendChild(playlistNameLabel);
+        playlistName.appendChild(playlistNameValue);
+
+        let playlistDuration = document.createElement('div');
+        playlistDuration.classList.add('track-album')
+
+        let durationNameLabel = document.createElement('span');
+        durationNameLabel.classList.add('album-name-label')
+        durationNameLabel.appendChild(document.createTextNode('Playlist Duration: '));
+        let durationNameValue = document.createElement('span');
+        durationNameValue.classList.add('album-name-label-value')
+        durationNameValue.appendChild(document.createTextNode(playlist.duration));
+        playlistDuration.appendChild(durationNameLabel);
+        playlistDuration.appendChild(durationNameValue);
+
+        let allTracksDuration = document.createElement('div');
+        allTracksDuration.classList.add('track-album')
+
+        let allTracksNameLabel = document.createElement('span');
+        allTracksNameLabel.classList.add('album-name-label')
+        allTracksNameLabel.appendChild(document.createTextNode('Total Tracks: '));
+        let allTracksNameValue = document.createElement('span');
+        allTracksNameValue.classList.add('album-name-label-value')
+        allTracksNameValue.appendChild(document.createTextNode(playlist.totalTrakcs));
+        allTracksDuration.appendChild(allTracksNameLabel);
+        allTracksDuration.appendChild(allTracksNameValue);
+
+        playlistContainer.appendChild(playlistName);
+        playlistContainer.appendChild(playlistDuration);
+        playlistContainer.appendChild(allTracksDuration);
+
+
+        let getTracksButton = document.createElement('button');
+        getTracksButton.onclick = function () {
+            getTracksForPlaylist(playlist.name, playlistContainer.id)
+        }
+        
+        getTracksButton.classList.add('view-all-tracks');
+        getTracksButton.appendChild(document.createTextNode('Show All Tracks'));
+        if(playlist.tracks.length) {
+            playlistContainer.appendChild(getTracksButton);
+        }
+
+        let btnDiv = document.createElement('div');
+        btnDiv.id = 'button-delete-' + count;
+        btnDiv.classList.add('btn-delete-div')
+
+        let label = document.createElement('button');
+        label.onclick = function () {
+            deletePlaylist(playlist.name)
+        }
+        label.classList.add('button-delete');
+        label.appendChild(document.createTextNode('Delete Playlist'));
+
+        btnDiv.appendChild(label);
+
+        playlistContainer.appendChild(btnDiv);
+        primaryContainer.appendChild(playlistContainer)
+    })
+
+    maintrackContainer.appendChild(primaryContainer);
+}
+
+function capitalFirstCase(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
