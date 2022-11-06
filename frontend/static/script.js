@@ -658,3 +658,139 @@ async function deletePlaylist(playlistName) {
 function capitalFirstCase(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+function sort(param) {
+    resetPlaylistSpace();
+    loadAllCustomPlaylists(param)
+}
+
+function sortTrack(sortParam) {
+    console.log(sortParam)
+    resetSearchResult();
+    searchByTrackName(sortParam);
+}
+
+function resetPlaylistSpace() {
+
+    let galleryContainer = document.getElementById('playlist-details')
+    let filteredSection = document.getElementById('primary-container-3');
+    let label = document.getElementById('custom-list-count');
+    label.innerHTML = "";
+    if (filteredSection || label) {
+        filteredSection.appendChild(document.createTextNode(""));
+
+        galleryContainer.removeChild(filteredSection);
+    }
+}
+
+function getTracksForPlaylist(playlistName, id) {
+    const url = rootApiPath + '/customPlaylist/tracks/' + playlistName;
+    const newUrl = url;
+
+    fetch(
+        newUrl,
+        {
+            headers: { "Content-Type": "application/json" },
+            method: "GET"
+        }
+    )
+        .then(tracks => tracks.json()
+            .then(tracks => {
+                console.log(tracks)
+                populateTracksCustomplaylist(tracks, id);
+            }))
+        .catch(err => {
+            console.log('Error fetching the tracks for custom playlist', err)
+        })
+}
+
+function populateTracksCustomplaylist(allTracks, id) {
+    let btnDiv = document.getElementById('button-delete-' + id);
+    let playlistContainer = document.getElementById(id);
+    if (document.getElementById('p-container-' + id)) {
+        playlistContainer.removeChild('p-container-' + id);
+    } else {
+        let primaryContainer = document.createElement('div')
+        primaryContainer.id = 'p-container-' + id;
+        primaryContainer.innerHTML = '';
+        playlistContainer.appendChild(primaryContainer);
+
+        allTracks.forEach(track => {
+
+            let trackContainer = document.createElement('div');
+            trackContainer.classList.add('track-container-extra')
+
+            let trackName = document.createElement('div');
+            trackName.id = 'track-name';
+            trackName.classList.add('track-name')
+
+            let trackNameLabel = document.createElement('span');
+            trackNameLabel.classList.add('track-name-label')
+            trackNameLabel.appendChild(document.createTextNode('Track Name: '));
+
+            let trackNameValue = document.createElement('span');
+            trackNameValue.classList.add('track-name-label-value')
+            trackNameValue.appendChild(document.createTextNode(track.track));
+            trackName.appendChild(trackNameLabel);
+            trackName.appendChild(trackNameValue);
+
+
+            let trackArtist = document.createElement('div');
+            trackArtist.id = 'track-artist';
+            trackArtist.classList.add('track-artist')
+
+            let artistNameLabel = document.createElement('span');
+            artistNameLabel.classList.add('artist-name-label')
+            artistNameLabel.appendChild(document.createTextNode('Artist Name: '));
+            let artistNameValue = document.createElement('span');
+            artistNameValue.classList.add('artist-name-label-value')
+            artistNameValue.appendChild(document.createTextNode(track.artist));
+            trackArtist.appendChild(artistNameLabel);
+            trackArtist.appendChild(artistNameValue);
+
+
+
+            let trackAlbum = document.createElement('div');
+            trackAlbum.id = 'track-album';
+            trackAlbum.classList.add('track-album')
+
+            let albumNameLabel = document.createElement('span');
+            albumNameLabel.classList.add('album-name-label')
+            albumNameLabel.appendChild(document.createTextNode('Album Name: '));
+            let albumNameValue = document.createElement('span');
+            albumNameValue.classList.add('album-name-label-value')
+            albumNameValue.appendChild(document.createTextNode(track.album));
+            trackAlbum.appendChild(albumNameLabel);
+            trackAlbum.appendChild(albumNameValue);
+
+
+            let trackDuration = document.createElement('div');
+            trackDuration.id = 'track-duration';
+            trackDuration.classList.add('track-duration')
+
+            let durationNameLabel = document.createElement('span');
+            durationNameLabel.classList.add('duration-name-label')
+            durationNameLabel.appendChild(document.createTextNode('Duration: '));
+            let durationNameValue = document.createElement('span');
+            durationNameValue.classList.add('duration-name-label-value')
+            durationNameValue.appendChild(document.createTextNode(track.duration));
+            trackDuration.appendChild(durationNameLabel);
+            trackDuration.appendChild(durationNameValue);
+
+
+            trackContainer.appendChild(trackName);
+            trackContainer.appendChild(trackArtist);
+            trackContainer.appendChild(trackAlbum);
+            trackContainer.appendChild(trackDuration);
+            // playlistContainer.appendChild(trackContainer);
+            primaryContainer.appendChild(trackContainer);
+
+        })
+
+        // trackContainer.appendChild(primaryContainer)
+
+        // primaryContainer.appendChild(playlistContainer);
+        playlistContainer.insertBefore(primaryContainer, btnDiv);
+    }
+
+}
