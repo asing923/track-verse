@@ -258,6 +258,123 @@ router.get('/allCustomPlayLists', cors(), async (req, res) => {
         })
 });
 
+// List all tracks
+router.get('/listAlltracks', cors(), async (req, res) => {
+    let allTracks = tracks;
+    try {
+        res.status(200).send(allTracks);
+    }
+    catch (err) {
+        res.status(500).send('Error fetching list of tracks!')
+    }
+})
+
+// Fetch all tracks based on provided genre name
+router.get('/genre/:name', cors(), async (req, res) => {
+    let selectedGenre = req.params.name.trim();
+    let availableTracks = [];
+    try {
+        tracks.forEach(track => {
+            let trackGenresString = track.track_genres.replace(/(^,)|(,$)/g, '');
+            let trackGenres = JSON.parse(trackGenresString.replace(/'/g, '"'));
+            let existingGenres = Object.values(trackGenres)
+            existingGenres.forEach(
+                genre => {
+                    if (genre.genre_title.toLowerCase() === selectedGenre.toString().toLowerCase()) {
+                        if (!availableTracks.includes(track)) {
+                            availableTracks.push(track);
+                        }
+
+                    }
+                }
+            )
+        });
+        res.status(200).send(availableTracks);
+    } catch (err) {
+        res.status(500).send('Error fetching genre!')
+    }
+});
+
+// Find all track by track name, artist name, album name and sort the response
+router.get('/track/findByAll/:name', cors(), async (req, res) => {
+    let name = req.params.name.toLowerCase().trim();
+    let sortParam = req.get('Sort');
+    let findBy = req.get('findBy');
+    let foundTrack = [];
+    try {
+        //for matching track name
+        if (findBy == 1) {
+            foundTrack = tracks.filter(track => {
+                return track.track_title.toLowerCase().includes(name);
+            })
+        }
+        //for matching artist name 
+        else if (findBy == 2) {
+            foundTrack = tracks.filter(track => {
+                return track.artist_name.toLowerCase().includes(name);
+            })
+        }
+        //for matching album name 
+        else if (findBy == 3) {
+            foundTrack = tracks.filter(track => {
+                return track.album_title.toLowerCase().includes(name);
+            })
+        } else {
+            foundTrack = tracks.filter(track => {
+                return track.track_title.toLowerCase().includes(name) || track.album_title.toLowerCase().includes(name) || track.artist_name.toLowerCase().includes(name);;
+            })
+        }
+        if (sortParam === 'track') {
+            foundTrack.sort((one, two) => {
+                let elementOne = one.track_title.toLowerCase(),
+                    elementtwo = two.track_title.toLowerCase();
+
+                if (elementOne < elementtwo) {
+                    return -1;
+                }
+                if (elementOne > elementtwo) {
+                    return 1;
+                }
+                return 0;
+            })
+        } else if (sortParam === 'duration') {
+            foundTrack.sort((one, two) => {
+                const [minutesOne, secondsOne] = one.track_duration.split(':');
+                let durationSecondsOne = convertToSeconds(minutesOne, secondsOne)
+                const [minutesTwo, secondsTwo] = two.track_duration.split(':');
+                let durationSecondsTwo = convertToSeconds(minutesTwo, secondsTwo)
+                return durationSecondsTwo - durationSecondsOne;
+            })
+        } else if (sortParam === 'artist') {
+            foundTrack.sort((one, two) => {
+                let elementOne = one.artist_name.toLowerCase(),
+                    elementTwo = two.artist_name.toLowerCase();
+                if (elementOne < elementTwo) {
+                    return -1;
+                }
+                if (elementOne > elementTwo) {
+                    return 1;
+                }
+                return 0;
+            })
+        } else if (sortParam === 'album') {
+            foundTrack.sort((one, two) => {
+                let elementOne = one.album_title.toLowerCase(),
+                    elementTwo = two.album_title.toLowerCase();
+                if (elementOne < elementTwo) {
+                    return -1;
+                }
+                if (elementOne > elementTwo) {
+                    return 1;
+                }
+                return 0;
+            })
+        }
+        res.status(200).send(foundTrack);
+    } catch (err) {
+        res.status(500).send('Error fetching ltrack details!')
+    }
+});
 
 //Register All router
 app.use(apiRoute, router);
