@@ -184,6 +184,81 @@ router.put('/customPlaylist/modify', async (req, res) => {
     }
 });
 
+// 8. Get all tracks of provided custom playlist name
+router.get('/customPlaylist/tracks/:name', cors(), async (req, res) => {
+    let trackName = req.params.name.toLowerCase().trim();
+    let allTracks = [];
+    await CustomPlayList.findOne({ name: trackName }).then( playlist => {
+        if (!playlist) {
+            res.status(404).send('Playlist not found in Database');
+        } else {
+            playlist.tracks.forEach(track => {
+                let trackElement = {};
+                trackElement.id = track.id
+                trackElement.name = track.name;
+                allTracks.push(track);
+            })
+            res.status(200).send(allTracks);
+        }
+    })
+        .catch(err => {
+            res.status(500).send('Error fetching list of custom playlists');
+        })
+});
+
+// 9. Delete a custom playlist by name
+router.delete('/customPlaylist/:name', cors(), async (req, res) => {
+    let playlistName = req.params.name.toLowerCase().trim();
+    await CustomPlayList.deleteOne({ name: playlistName }).then( playlist => {
+        if (!playlist) {
+            res.status(404).send('Playlist not found in Database')
+        } else {
+            res.status(200).json(`Playlist with name: ${playlistName} has been deleted`);
+        }
+    })
+        .catch(err => {
+            res.status(500).json(`Error deleting custom playlists with name: ${playlistName}`);
+        })
+});
+
+// 10. Get all custom playlists
+router.get('/allCustomPlayLists', cors(), async (req, res) => {
+    let response = []
+    let sortParam = req.get('sortBy') === 'name' ? 'name' : null;
+    await CustomPlayList.find().sort(sortParam).then(async playlist => {
+        playlist.forEach(element => {
+            let item = {}
+            let playlistDuration = 0;
+            item.name = element.name;
+            element.tracks.forEach(track => {
+                if (track.duration) {
+                    const [minutes, seconds] = track.duration.toString().split(':');
+                    let durationSeconds = convertToSeconds(minutes, seconds)
+                    playlistDuration += durationSeconds;
+                }
+            }) 
+            item.tracks = [...element.tracks];
+            item.duration = new Date(playlistDuration * 1000).toISOString().substring(14, 19);
+            item.totalTrakcs = element.tracks.length;
+            response.push(item)
+        })
+        if(req.get('sortBy') === 'duration') {
+            response.sort((a, b) => {
+                const [minutesA, secondsA] = a.duration.split(':');
+                let durationSecondsA = convertToSeconds(minutesA, secondsA)
+                const [minutesB, secondsB] = b.duration.split(':');
+                let durationSecondsB = convertToSeconds(minutesB, secondsB)
+                    return durationSecondsB - durationSecondsA;
+            })
+        }
+        res.status(200).send(response);
+    })
+        .catch(err => {
+            res.status(500).send(err);
+        })
+});
+
+
 //Register All router
 app.use(apiRoute, router);
 
@@ -194,4 +269,8 @@ app.listen(port, () => {
 
 function capitalFirstCase(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function convertToSeconds(minutes, seconds) {
+    return Number(minutes) * 60 + Number(seconds);
 }
