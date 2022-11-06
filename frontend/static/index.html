@@ -50,7 +50,13 @@
                             </button>
 
                         </div>
-                        
+                        <div class="sort-by-options">
+                            <span class="sort-by-traks">Sort by: </span>
+                        <button onclick="sortTrack('track')" class="sort">Track Name</button>
+                        <button onclick="sortTrack('duration')" class="sort">Track Duration</button>
+                        <button onclick="sortTrack('artist')" class="sort">Artist Name</button>
+                        <button onclick="sortTrack('album')" class="sort">Album Name</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -62,8 +68,6 @@
             </div>
 
             <div class="genre-tracks" id="genre-tracks"></div>
-
-        </div>
     </div>
     <footer class="footer">
         <div class="footer-container">

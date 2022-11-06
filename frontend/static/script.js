@@ -135,3 +135,9 @@ function resetSearchResult() {
     let galleryContainer = document.getElementById('genre-tracks-one')
     galleryContainer.innerHTML = "";
 }
+
+function sortTrack(sortParam) {
+    console.log(sortParam)
+    resetSearchResult();
+    searchByTrackName(sortParam);
+}
