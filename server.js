@@ -16,7 +16,7 @@ db.once('open', () => console.log('Connected to database'))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(cors())
- 
+
 const apiRoute = '/api';
 const router = express.Router();
 
@@ -46,7 +46,7 @@ router.get('/listAllGenres', cors(), async (req, res) => {
         })
         res.status(200).send(listOfGenre);
     }
-    catch(err) {
+    catch (err) {
         res.status(500).send('Error fetching list of genre!')
     }
 })
@@ -57,13 +57,13 @@ router.get('/artist/:id', cors(), async (req, res) => {
     try {
 
         let foundArtist = artists.find(artist => artist.artist_id === id);
-        if(foundArtist) {
+        if (foundArtist) {
             res.status(200).send(foundArtist);
         } else {
             res.status(404).send('Artist not found with give ID!');
         }
-        
-    } catch(err) {
+
+    } catch (err) {
         res.status(500).send('Error fetching artist details!')
     }
 });
@@ -73,7 +73,7 @@ router.get('/track/:id', cors(), async (req, res) => {
     let id = +req.params.id;
     try {
         let foundTrack = tracks.find(track => track.track_id === id);
-        if(foundTrack) {
+        if (foundTrack) {
             let responseObject = {};
             responseObject.album_id = foundTrack.album_id;
             responseObject.album_title = foundTrack.album_title;
@@ -90,7 +90,7 @@ router.get('/track/:id', cors(), async (req, res) => {
         } else {
             res.status(404).send('Track not found with given ID!')
         }
-    } catch(err) {
+    } catch (err) {
         res.status(500).send('Error fetching track details!')
     }
 });
@@ -102,13 +102,13 @@ router.get('/track/find/:name', cors(), async (req, res) => {
         let foundTrack = tracks.filter(track => {
             return track.album_title.toLowerCase().includes(name) || track.track_title.toLowerCase().includes(name);
         });
-        if(foundTrack.length){
+        if (foundTrack.length) {
             //sending only 10 or less matching tracks
             res.status(200).send(foundTrack.slice(0, 10));
         } else {
             res.status(404).send('No track found with matching album name or track name!');
         }
-    } catch(err) {
+    } catch (err) {
         res.status(500).send('Error fetching matching track details!')
     }
 });
@@ -121,12 +121,12 @@ router.get('/artist/find/:name', cors(), async (req, res) => {
         let foundArtist = artists.filter(artist => {
             return artist.artist_name.toString().toLowerCase().includes(inputName.toLowerCase())
         });
-        if(foundArtist.length){
+        if (foundArtist.length) {
             res.status(200).send(foundArtist);
         } else {
             res.status(404).send('Artist not found with given name!');
         }
-    } catch(err) {
+    } catch (err) {
         res.status(500).send('Error fetching artist details!')
     }
 });
@@ -151,9 +151,9 @@ router.post('/customPlaylist', async (req, res) => {
             }
         }
     })
-    .catch(err => {
-        res.status('Internal server error while checking if list exists!')
-    })
+        .catch(err => {
+            res.status('Internal server error while checking if list exists!')
+        })
 });
 
 // 7. Modify custom playlist with name and update new details
@@ -188,7 +188,7 @@ router.put('/customPlaylist/modify', async (req, res) => {
 router.get('/customPlaylist/tracks/:name', cors(), async (req, res) => {
     let trackName = req.params.name.toLowerCase().trim();
     let allTracks = [];
-    await CustomPlayList.findOne({ name: trackName }).then( playlist => {
+    await CustomPlayList.findOne({ name: trackName }).then(playlist => {
         if (!playlist) {
             res.status(404).send('Playlist not found in Database');
         } else {
@@ -209,7 +209,7 @@ router.get('/customPlaylist/tracks/:name', cors(), async (req, res) => {
 // 9. Delete a custom playlist by name
 router.delete('/customPlaylist/:name', cors(), async (req, res) => {
     let playlistName = req.params.name.toLowerCase().trim();
-    await CustomPlayList.deleteOne({ name: playlistName }).then( playlist => {
+    await CustomPlayList.deleteOne({ name: playlistName }).then(playlist => {
         if (!playlist) {
             res.status(404).send('Playlist not found in Database')
         } else {
@@ -236,19 +236,19 @@ router.get('/allCustomPlayLists', cors(), async (req, res) => {
                     let durationSeconds = convertToSeconds(minutes, seconds)
                     playlistDuration += durationSeconds;
                 }
-            }) 
+            })
             item.tracks = [...element.tracks];
             item.duration = new Date(playlistDuration * 1000).toISOString().substring(14, 19);
             item.totalTrakcs = element.tracks.length;
             response.push(item)
         })
-        if(req.get('sortBy') === 'duration') {
+        if (req.get('sortBy') === 'duration') {
             response.sort((a, b) => {
                 const [minutesA, secondsA] = a.duration.split(':');
                 let durationSecondsA = convertToSeconds(minutesA, secondsA)
                 const [minutesB, secondsB] = b.duration.split(':');
                 let durationSecondsB = convertToSeconds(minutesB, secondsB)
-                    return durationSecondsB - durationSecondsA;
+                return durationSecondsB - durationSecondsA;
             })
         }
         res.status(200).send(response);
