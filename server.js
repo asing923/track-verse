@@ -156,6 +156,34 @@ router.post('/customPlaylist', async (req, res) => {
     })
 });
 
+// 7. Modify custom playlist with name and update new details
+router.put('/customPlaylist/modify', async (req, res) => {
+    if (!req.body) {
+        return res.status(400).send({
+            message: "Please provide data as it can't be empty!"
+        });
+    }
+    const playlistName = req.body.name.toLowerCase().trim();
+    if (playlistName.length === 0 || playlistName === undefined) {
+        res.status(400).send("Please provide the playlist name!")
+    } else {
+        req.body.name = req.body.name.toLowerCase();
+        await CustomPlayList.findOneAndUpdate({ name: playlistName }, req.body, { useFindAndModify: true, new: true })
+            .then(data => {
+                if (!data) {
+                    res.status(404).send({
+                        message: `Cannot update custom playlist as playlist with name: ${playlistName} not found!`
+                    });
+                } else res.send({ message: "Custom playlist has been updated successfully." });
+            })
+            .catch(err => {
+                res.status(500).send({
+                    message: `Error updating Custom playlist with name: ${playlistName} + ${err}`
+                });
+            });
+    }
+});
+
 //Register All router
 app.use(apiRoute, router);
 
