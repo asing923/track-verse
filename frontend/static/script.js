@@ -29,11 +29,11 @@ async function searchByTrackName(sortParam) {
     let trackNameInput = document.getElementById("search-by-track-input").value
     let findByVal = document.getElementById("find-by");
     let value = findByVal.value;
-    if(sortParam === undefined) {
+    if (sortParam === undefined) {
         sortParam = 'track';
     }
-    
-    if (trackNameInput.trim().length === 0 ) {
+
+    if (trackNameInput.trim().length === 0) {
         resetSearchResult();
         alert('Please provide input to search track data')
         return;
@@ -44,7 +44,7 @@ async function searchByTrackName(sortParam) {
         fetch(
             newUrl,
             {
-                headers: { "Content-Type": "application/json", "Sort": sortParam, "findBy": value},
+                headers: { "Content-Type": "application/json", "Sort": sortParam, "findBy": value },
                 method: "GET"
             }
         )
@@ -61,7 +61,7 @@ async function searchByTrackName(sortParam) {
             .catch(err => {
                 console.log('Error fetching the results')
             })
-    } 
+    }
 }
 
 
@@ -322,14 +322,14 @@ function resetTracksGenre() {
 
 function searchByTrackNameForPlaylist() {
     let trackNameInput = document.getElementById("search-by-track-input-two").value;
-    
+
     if (trackNameInput.length === 0) {
         resetSearchResult();
         return;
     }
 
     if (trackNameInput !== '' && trackNameInput.length > 0) {
-        const url = rootApiPath +  '/track/findByAll' + '/' + trackNameInput;
+        const url = rootApiPath + '/track/findByAll' + '/' + trackNameInput;
         const newUrl = url;
 
         fetch(
@@ -520,9 +520,9 @@ async function createPlaylist() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data) 
+            body: JSON.stringify(data)
         });
-        return response.json(); 
+        return response.json();
     }
 }
 
@@ -609,10 +609,10 @@ function populatePlaylistData(playlists) {
         getTracksButton.onclick = function () {
             getTracksForPlaylist(playlist.name, playlistContainer.id)
         }
-        
+
         getTracksButton.classList.add('view-all-tracks');
         getTracksButton.appendChild(document.createTextNode('Show All Tracks'));
-        if(playlist.tracks.length) {
+        if (playlist.tracks.length) {
             playlistContainer.appendChild(getTracksButton);
         }
 
@@ -636,6 +636,25 @@ function populatePlaylistData(playlists) {
     maintrackContainer.appendChild(primaryContainer);
 }
 
+async function deletePlaylist(playlistName) {
+    const url = rootApiPath + '/customPlaylist' + '/' + playlistName;
+    const newUrl = url;
+    await fetch(newUrl, {
+        method: 'DELETE',
+        headers: {
+            'Content-type': 'application/json'
+        }
+    })
+        .then(data => data.json())
+        .then(data => {
+            alert(data)
+            location.reload();
+        })
+        .catch(err => {
+            console.log(err)
+        });
+}
+
 function capitalFirstCase(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
-  }
+}
