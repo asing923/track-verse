@@ -94,6 +94,24 @@ router.get('/track/:id', cors(), async (req, res) => {
     }
 });
 
+// 4. Find first 10 track by album name or track title
+router.get('/track/find/:name', cors(), async (req, res) => {
+    let name = req.params.name.toLowerCase().trim();
+    try {
+        let foundTrack = tracks.filter(track => {
+            return track.album_title.toLowerCase().includes(name) || track.track_title.toLowerCase().includes(name);
+        });
+        if(foundTrack.length){
+            //sending only 10 or less matching tracks
+            res.status(200).send(foundTrack.slice(0, 10));
+        } else {
+            res.status(404).send('No track found with matching album name or track name!');
+        }
+    } catch(err) {
+        res.status(500).send('Error fetching matching track details!')
+    }
+});
+
 //Register All router
 app.use(apiRoute, router);
 
