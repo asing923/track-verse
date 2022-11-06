@@ -67,6 +67,32 @@ router.get('/artist/:id', cors(), async (req, res) => {
     }
 });
 
+// 3. Fetch track detail based on track ID
+router.get('/track/:id', cors(), async (req, res) => {
+    let id = +req.params.id;
+    try {
+        let foundTrack = tracks.find(track => track.track_id === id);
+        if(foundTrack) {
+            let responseObject = {};
+            responseObject.album_id = foundTrack.album_id;
+            responseObject.album_title = foundTrack.album_title;
+            responseObject.artist_id = foundTrack.artist_id;
+            responseObject.artist_name = foundTrack.artist_name;
+            responseObject.tags = foundTrack.tags;
+            responseObject.track_date_created = foundTrack.track_date_created;
+            responseObject.track_date_recorded = foundTrack.track_date_recorded
+            responseObject.track_duration = foundTrack.track_duration;
+            responseObject.track_genres = foundTrack.track_genres;
+            responseObject.track_number = foundTrack.track_number;
+            responseObject.track_title = foundTrack.track_title;
+            res.status(200).send(responseObject);
+        } else {
+            res.status(404).send('Track not found with given ID!')
+        }
+    } catch(err) {
+        res.status(500).send('Error fetching track details!')
+    }
+});
 
 //Register All router
 app.use(apiRoute, router);
