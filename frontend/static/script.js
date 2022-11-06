@@ -314,3 +314,161 @@ function resetTracksGenre() {
         genreTracksContainer.removeChild(trackSection);
     }
 }
+
+function searchByTrackNameForPlaylist() {
+    let trackNameInput = document.getElementById("search-by-track-input-two").value;
+    
+    if (trackNameInput.length === 0) {
+        resetSearchResult();
+        return;
+    }
+
+    if (trackNameInput !== '' && trackNameInput.length > 0) {
+        const url = rootApiPath +  '/track/findByAll' + '/' + trackNameInput;
+        const newUrl = url;
+
+        fetch(
+            newUrl,
+            {
+                headers: { "Content-Type": "application/json" },
+                method: "GET"
+            }
+        )
+            .then(tracks => tracks.json()
+                .then(tracks => {
+                    if (tracks.length) {
+                        console.log(tracks)
+                        fetchedTracks = [...tracks];
+                        populateTrackDataTwo(tracks)
+                    } else {
+                        document.getElementById("search-by-track-input").value = '';
+                        alert('No track found with entered details!')
+                        resetSearchResultTwo();
+                    }
+                }))
+            .catch(err => {
+                console.log('Error fetching the results', err)
+            })
+    }
+}
+
+function populateTrackDataTwo(trackList) {
+
+    resetSearchResultTwo();
+    let maintrackContainer = document.getElementById('matched-tracks');
+    let primaryContainer = document.createElement('div');
+    primaryContainer.id = 'primary-container-2';
+
+    let label = document.createElement('span');
+    label.appendChild(document.createTextNode('Found matched tracks: ' + trackList.length + '\u00A0'));
+    primaryContainer.appendChild(label);
+
+    // let songsAdded = document.createElement('span');
+    // songsAdded.appendChild(document.createTextNode('Tracks added to the playlist: ' + customPlaylistTracks.length));
+    // primaryContainer.appendChild(songsAdded);
+
+    trackList.forEach(track => {
+
+        let trackContainer = document.createElement('button');
+
+        trackContainer.id = track.track_id;
+        trackContainer.onclick = function () {
+            updatePlaylistTracks(track);
+            trackContainer.classList.add('checked')
+        }
+        console.log(customPlaylistTracks);
+        customPlaylistTracks.forEach(element => {
+            if (element.track_id === track.track_id) {
+                trackContainer.classList.add('checked')
+            }
+        })
+        trackContainer.classList.add('track-container')
+
+        let trackName = document.createElement('div');
+        trackName.id = 'track-name';
+        trackName.classList.add('track-name')
+
+        let trackNameLabel = document.createElement('span');
+        trackNameLabel.classList.add('track-name-label')
+        trackNameLabel.appendChild(document.createTextNode('Track Name: '));
+
+        let trackNameValue = document.createElement('span');
+        trackNameValue.classList.add('track-name-label-value')
+        trackNameValue.appendChild(document.createTextNode(track.track_title));
+        trackName.appendChild(trackNameLabel);
+        trackName.appendChild(trackNameValue);
+
+        let trackArtist = document.createElement('div');
+        trackArtist.id = 'track-artist';
+        trackArtist.classList.add('track-artist')
+
+        let artistNameLabel = document.createElement('span');
+        artistNameLabel.classList.add('artist-name-label')
+        artistNameLabel.appendChild(document.createTextNode('Artist Name: '));
+        let artistNameValue = document.createElement('span');
+        artistNameValue.classList.add('artist-name-label-value')
+        artistNameValue.appendChild(document.createTextNode(track.artist_name));
+        trackArtist.appendChild(artistNameLabel);
+        trackArtist.appendChild(artistNameValue);
+
+        let trackAlbum = document.createElement('div');
+        trackAlbum.id = 'track-album';
+        trackAlbum.classList.add('track-album')
+
+        let albumNameLabel = document.createElement('span');
+        albumNameLabel.classList.add('album-name-label')
+        albumNameLabel.appendChild(document.createTextNode('Album Name: '));
+        let albumNameValue = document.createElement('span');
+        albumNameValue.classList.add('album-name-label-value')
+        albumNameValue.appendChild(document.createTextNode(track.album_title));
+        trackAlbum.appendChild(albumNameLabel);
+        trackAlbum.appendChild(albumNameValue);
+
+
+        let trackDuration = document.createElement('div');
+        trackDuration.id = 'track-duration';
+        trackDuration.classList.add('track-duration')
+
+        let durationNameLabel = document.createElement('span');
+        durationNameLabel.classList.add('duration-name-label')
+        durationNameLabel.appendChild(document.createTextNode('Duration: '));
+        let durationNameValue = document.createElement('span');
+        durationNameValue.classList.add('duration-name-label-value')
+        durationNameValue.appendChild(document.createTextNode(track.track_duration));
+        trackDuration.appendChild(durationNameLabel);
+        trackDuration.appendChild(durationNameValue);
+
+        trackContainer.appendChild(trackName);
+        trackContainer.appendChild(trackArtist);
+        trackContainer.appendChild(trackAlbum);
+        trackContainer.appendChild(trackDuration);
+        primaryContainer.appendChild(trackContainer);
+    })
+
+    maintrackContainer.appendChild(primaryContainer);
+
+}
+
+function resetSearchResultTwo() {
+    let matchedTracks = document.getElementById('matched-tracks')
+    let trackSection = document.getElementById('primary-container-2');
+    if (trackSection) {
+        trackSection.appendChild(document.createTextNode(""));
+        matchedTracks.removeChild(trackSection);
+    }
+}
+
+function updatePlaylistTracks(track) {
+    if (customPlaylistTracks.length) {
+        let found = customPlaylistTracks.find(element => {
+            return element.track_id === track.track_id
+        })
+        if (!found) {
+            customPlaylistTracks.push(track);
+        }
+    } else {
+        customPlaylistTracks.push(track)
+    }
+    console.log(customPlaylistTracks)
+}
+
