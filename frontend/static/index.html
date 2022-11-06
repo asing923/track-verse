@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <!-- <title>ECE 9065 Lab 3</title> -->
+    <title>Musically</title>
+    <meta name="description" content="Webapp to display music details">
+    <meta name="author" content="Akshpreet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Place your content here -->
+    <div class="main-container">
+        <div class="title-container">
+            <span class="title">Explore Music Metadata</span>
+        </div>
+        <div id="gallery-container" class="gallery-container">
+
+            <div class="search-by-root">
+
+                <div class="search-by-label">
+                    <span>Search for a track by artist name, track name or album name.</span>
+                </div>
+
+                <div class="search-bar">
+
+                    <div class="drop-down-container">
+                        <select id="find-by" class="drop-down">
+                            <option value="1" selected="selected">Search by Track Name</option>
+                            <option value="2">Search by Artist Name</option>
+                            <option value="3">Search by Album Name</option>
+                        </select>
+                    </div>
+                    
+                    <div class="search-by-details">
+
+                        <div class="search">
+                            <input id="search-by-track-input" type="text" class="search-input" min="1" max="20"
+                                placeholder="Enter the artist name, track name or album name ">
+                            <button onclick="searchByTrackName()" id="search-by-track-btn" type="submit"
+                                class="search-button">
+                                Search
+                            </button>
+
+                            <button onclick="resetSearchResult()" id="search-by-track-btn" type="submit"
+                                class="search-button-reset">
+                                Reset
+                            </button>
+
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <div id="genre-tracks-one" class="genre-tracks-one"></div>
+
+            <div id="genre-container" class="genre-container">
+                <span class="genre-label">Music Genres</span>
+            </div>
+
+            <div class="genre-tracks" id="genre-tracks"></div>
+
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="footer-container">
+            © Copyright 2022 Western University, London. All rights reserved.
+        </div>
+        <div class="references">
+            <span class="ref-label">References:</span>
+            <a href="https://arxiv.org/abs/1612.01840">Music Archive</a>
+            <a href="https://www.w3schools.com">www.w3schools.com</a>
+            <a href="https://hackernoon.com/restful-api-designing-guidelines-the-best-practices-60e1d954e7c9/">API - Best practices</a>
+            <a href="Express.js Tutorial: Build RESTful APIs with Node and Express">Creating Rest API's</a>
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+
+</html>
