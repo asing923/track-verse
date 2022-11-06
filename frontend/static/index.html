@@ -68,6 +68,59 @@
             </div>
 
             <div class="genre-tracks" id="genre-tracks"></div>
+
+            <div class="custom-playlist-all" id="custom-playlist-all">
+                <span class="genre-label">Existing Custom Playlists</span>
+                <div class="sort-by-root">
+                    <span class="custom-list-count" id="custom-list-count"></span>
+                    <div class="sort-by">
+                        <span>Sort by: </span>
+                        <button onclick="sort('name')" class="sort">Playlist Name</button>
+                        <button onclick="sort('duration')" class="sort">Playlist Duration</button>
+                    </div>
+                </div>
+
+                <div id="playlist-details">
+
+                </div>
+            </div>
+
+            <div class="custom-playlist" id="custom-playlist">
+                <span class="genre-label">Create Custom Playlists</span>
+                <input id="custom-palylist-input" type="text" class="search-input" placeholder="Enter playlist name">
+
+                <div class="search-by-details">
+
+                    <span>Search tracks to add in playlist:</span>
+                    <div class="search">
+                        <input id="search-by-track-input-two" type="text" class="search-input" min="1" max="20"
+                            placeholder="Enter the artist name, track name or album name ">
+                        <button onclick="searchByTrackNameForPlaylist()" id="search-by-track-btn-two" type="submit"
+                            class="search-button">
+                            Search
+                        </button>
+
+                        <button onclick="resetSearchResultTwo()" id="search-by-track-btn-two" type="submit"
+                            class="search-button-reset">
+                            Reset
+                        </button>
+                    </div>
+
+                    <div id="matched-tracks">
+                        <!-- to show matching tracks -->
+                    </div>
+
+                </div>
+                <div class="selected-tracks">
+                    <!-- can use to show tracks getting added -->
+                </div>
+                <button onclick="createPlaylist()" id="search-by-track-btn" type="submit"
+                    class="create-button-playlist">
+                    Create Playlist
+                </button>
+            </div>
+
+        </div>
     </div>
     <footer class="footer">
         <div class="footer-container">
