@@ -50,6 +50,23 @@ router.get('/listAllGenres', cors(), async (req, res) => {
     }
 })
 
+// 2. Fetch Artist details based on artist ID
+router.get('/artist/:id', cors(), async (req, res) => {
+    let id = +req.params.id.trim();
+    try {
+
+        let foundArtist = artists.find(artist => artist.artist_id === id);
+        if(foundArtist) {
+            res.status(200).send(foundArtist);
+        } else {
+            res.status(404).send('Artist not found with give ID!');
+        }
+        
+    } catch(err) {
+        res.status(500).send('Error fetching artist details!')
+    }
+});
+
 
 //Register All router
 app.use(apiRoute, router);
