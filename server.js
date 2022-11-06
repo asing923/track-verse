@@ -4,6 +4,7 @@ const path = require("path");
 const mongoose = require('mongoose');
 const app = express();
 const port = process.env.PORT || 4000
+const CustomPlayList = require('./models/customPlaylist')
 
 mongoose.connect(process.env.DATABASEURL, { useNewUrlParser: true })
 const cors = require("cors")
@@ -130,6 +131,31 @@ router.get('/artist/find/:name', cors(), async (req, res) => {
     }
 });
 
+// 6. Create custom playlist and save in DB
+router.post('/customPlaylist', async (req, res) => {
+    let playlistName = req.body.name.toLowerCase().trim();
+    await CustomPlayList.findOne({ name: playlistName }).then(async playlist => {
+        if (playlist) {
+            res.status(403).json("Custom playlist already exist in database")
+        } else {
+            const customPlayList = new CustomPlayList({
+                name: playlistName,
+                tracks: req.body.tracks
+            });
+            try {
+                const newCustomPlaylist = await customPlayList.save();
+                res.status(200).json(`Playlist has been created with name: ${capitalFirstCase(newCustomPlaylist.name)}`);
+            }
+            catch (err) {
+                res.status(400).json({ message: err.message });
+            }
+        }
+    })
+    .catch(err => {
+        res.status('Internal server error while checking if list exists!')
+    })
+});
+
 //Register All router
 app.use(apiRoute, router);
 
@@ -137,3 +163,7 @@ app.use(apiRoute, router);
 app.listen(port, () => {
     console.log(`Server started and listening at http://localhost:${port}`)
 })
+
+function capitalFirstCase(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
