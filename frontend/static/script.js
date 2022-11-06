@@ -97,6 +97,7 @@ function populateTrackData(trackList) {
         trackName.appendChild(trackNameLabel);
         trackName.appendChild(trackNameValue);
 
+
         let trackArtist = document.createElement('div');
         trackArtist.id = 'track-artist';
         trackArtist.classList.add('track-artist')
@@ -109,6 +110,8 @@ function populateTrackData(trackList) {
         artistNameValue.appendChild(document.createTextNode(track.artist_name));
         trackArtist.appendChild(artistNameLabel);
         trackArtist.appendChild(artistNameValue);
+
+
 
         let trackAlbum = document.createElement('div');
         trackAlbum.id = 'track-album';
@@ -123,6 +126,7 @@ function populateTrackData(trackList) {
         trackAlbum.appendChild(albumNameLabel);
         trackAlbum.appendChild(albumNameValue);
 
+
         let trackDuration = document.createElement('div');
         trackDuration.id = 'track-duration';
         trackDuration.classList.add('track-duration')
@@ -135,6 +139,7 @@ function populateTrackData(trackList) {
         durationNameValue.appendChild(document.createTextNode(track.track_duration));
         trackDuration.appendChild(durationNameLabel);
         trackDuration.appendChild(durationNameValue);
+
 
         trackContainer.appendChild(trackName);
         trackContainer.appendChild(trackArtist);
@@ -398,6 +403,7 @@ function populateTrackDataTwo(trackList) {
         trackName.appendChild(trackNameLabel);
         trackName.appendChild(trackNameValue);
 
+
         let trackArtist = document.createElement('div');
         trackArtist.id = 'track-artist';
         trackArtist.classList.add('track-artist')
@@ -410,6 +416,8 @@ function populateTrackDataTwo(trackList) {
         artistNameValue.appendChild(document.createTextNode(track.artist_name));
         trackArtist.appendChild(artistNameLabel);
         trackArtist.appendChild(artistNameValue);
+
+
 
         let trackAlbum = document.createElement('div');
         trackAlbum.id = 'track-album';
@@ -437,6 +445,7 @@ function populateTrackDataTwo(trackList) {
         durationNameValue.appendChild(document.createTextNode(track.track_duration));
         trackDuration.appendChild(durationNameLabel);
         trackDuration.appendChild(durationNameValue);
+
 
         trackContainer.appendChild(trackName);
         trackContainer.appendChild(trackArtist);
@@ -470,5 +479,50 @@ function updatePlaylistTracks(track) {
         customPlaylistTracks.push(track)
     }
     console.log(customPlaylistTracks)
+}
+
+async function createPlaylist() {
+    let playlistName = document.getElementById("custom-palylist-input").value
+    if (playlistName === '' || playlistName === undefined) {
+        alert("Please provide playlist name!")
+    } else {
+        let request = {};
+        request.name = playlistName;
+        let tracks = [];
+        customPlaylistTracks.forEach(element => {
+            let trackItem = {};
+            trackItem.id = element.track_id;
+            trackItem.track = element.track_title;
+            trackItem.duration = element.track_duration;
+            trackItem.album = element.album_title;
+            trackItem.artist = element.artist_name;
+            tracks.push(trackItem);
+        })
+        request.tracks = [...tracks];
+        console.log(request)
+        await postData(rootApiPath + '/customPlaylist', request)
+            .then((data) => {
+                alert(data)
+                customPlaylistTracks = [];
+                resetSearchResultTwo();
+                document.getElementById("custom-palylist-input").value = '';
+                document.getElementById("search-by-track-input-two").value = '';
+                location.reload();
+            })
+            .catch(err => {
+                alert(err);
+            });
+    }
+
+    async function postData(url = '', data = {}) {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data) 
+        });
+        return response.json(); 
+    }
 }
 
