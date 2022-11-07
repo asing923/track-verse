@@ -71,7 +71,7 @@
     border-radius: 4px;
     width: 80px;
     height: 41px;
-    background-color: #06b66c;
+    background-color: #ec9a29;
     text-decoration: none;
     border: none;
     color: white;
@@ -83,7 +83,7 @@
     border-radius: 4px;
     width: 80px;
     height: 41px;
-    background-color: #ec5525;
+    background-color: #a8201a;
     text-decoration: none;
     border: none;
     color: white;
@@ -239,7 +239,7 @@
     border-radius: 4px;
     width: 80px;
     height: 41px;
-    background-color: #06b66c;
+    background-color: #143642;
     text-decoration: none;
     border: none;
     color: white;
@@ -248,7 +248,7 @@
 }
 
 .checked {
-    outline: 2px solid #06b66c;
+    outline: 2px solid #2ec4b6;
 }
 
 .checked-track {
@@ -294,7 +294,7 @@
     border-radius: 4px;
     width: 143px;
     height: 25px;
-    background-color: #ec5525;
+    background-color: #0f8b8d;
     text-decoration: none;
     border: none;
     color: white;
@@ -380,7 +380,7 @@
     border-radius: 4px;
     width: 102px;
     height: 24px;
-    background-color: #30a7d7;
+    background-color: #590d22;
     text-decoration: none;
     border: none;
     color: white;
@@ -399,7 +399,7 @@
     border-radius: 4px;
     width: 90px;
     height: 41px;
-    background-color: #06a4b6;
+    background-color: #216869;
     text-decoration: none;
     border: none;
     color: white;

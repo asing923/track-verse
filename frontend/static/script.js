@@ -825,15 +825,29 @@ function fetchPlaylistTracks() {
             console.log('Error fetching the tracks for custom playlist', err)
         })
 }
+
+function resetSearchPlaylistTracks() {
+    let matchedTracks = document.getElementById('list-tracks')
+    let trackSection = document.getElementById('primary-container-playlist');
+    if (trackSection) {
+        trackSection.appendChild(document.createTextNode(""));
+        matchedTracks.removeChild(trackSection);
+    }
+}
+
 function populateListTracks(tracks) {
     fetchedPlaylistTracksList = [];
+    resetSearchPlaylistTracks();
     let primaryContainer = document.getElementById('list-tracks');
+
+    let primaryContainerPlayList = document.createElement('div');
+    primaryContainerPlayList.id = 'primary-container-playlist';
 
     if (tracks.length) {
         labelSpan = document.createElement('span');
         labelSpan.classList.add('track-name-label')
         labelSpan.appendChild(document.createTextNode('Select tracks to delete: '));
-        primaryContainer.appendChild(labelSpan)
+        primaryContainerPlayList.appendChild(labelSpan)
     }
 
     tracks.forEach(track => {
@@ -906,10 +920,9 @@ function populateListTracks(tracks) {
         trackContainer.appendChild(trackArtist);
         trackContainer.appendChild(trackAlbum);
         trackContainer.appendChild(trackDuration);
-        primaryContainer.appendChild(trackContainer);
-
-
+        primaryContainerPlayList.appendChild(trackContainer);
     })
+    primaryContainer.appendChild(primaryContainerPlayList);
 
 }
 
@@ -1075,7 +1088,7 @@ function addPlayListTracks(track) {
 async function modifyPlaylist() {
     let playlistName = document.getElementById("playlist-input").value
     if (playlistName === undefined || playlistName === '') {
-        alert('Please provide playlist name to search!')
+        alert('Please provide playlist name to modify!')
         return;
     }
     let request = {};
