@@ -120,6 +120,54 @@
                 </button>
             </div>
 
+            <div class="custom-playlist" id="custom-playlist">
+                <span class="genre-label">Modify Custom Playlist</span>
+                <div class="modify-list">
+                    <input id="playlist-input" type="text" class="search-input" placeholder="Enter playlist name to modify">
+                    <button onclick="fetchPlaylistTracks()" id="fetch-tracks-btn" type="submit"
+                            class="fetch-tracks-btn">
+                            Fetch Tracks
+                    </button>
+                </div>
+
+                <div class="delete-list-tracks">
+
+                    <div class="list-tracks" id="list-tracks">
+
+                    </div>
+                </div>
+                
+                <div class="search-by-details">
+
+                    <span>Search tracks to add in playlist:</span>
+                    <div class="search">
+                        <input id="search-by-track-input-three" type="text" class="search-input" min="1" max="20"
+                            placeholder="Enter the artist name, track name or album name ">
+                        <button onclick="searchByTrackNameForPlaylistThree()" id="search-by-track-btn-three" type="submit"
+                            class="search-button">
+                            Search
+                        </button>
+
+                        <button onclick="resetSearchResultThree()" id="search-by-track-btn-three" type="submit"
+                            class="search-button-reset">
+                            Reset
+                        </button>
+                    </div>
+
+                    <div id="matched-tracks-three">
+                        <!-- to show matching tracks -->
+                    </div>
+
+                </div>
+                <div class="selected-tracks">
+                    <!-- can use to show tracks getting added -->
+                </div>
+                <button onclick="modifyPlaylist()" id="search-by-track-btn" type="submit"
+                    class="create-button-playlist">
+                    Modify Playlist
+                </button>
+            </div>
+
         </div>
     </div>
     <footer class="footer">

@@ -251,6 +251,22 @@
     outline: 2px solid #06b66c;
 }
 
+.checked-track {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin: 0px;
+    width: 100%;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    margin-top: 3px;
+    margin-bottom: 9px;
+    border-left: 4px solid red;
+    padding-left: 5px;
+
+}
+
 .custom-playlist-all {
     display: flex;
     flex-direction: column;
@@ -268,8 +284,8 @@
     border: none;
     cursor: pointer;
     margin-top: 3px;
-    margin-bottom: 3px;
-    border-left: 3px solid #06b66c;
+    margin-bottom: 9px;
+    border-left: 4px solid #06b66c;
     padding-left: 5px;
 
 }
@@ -371,4 +387,23 @@
     cursor: pointer;
     text-align: center;
     margin: 2px 0 5px 0;
+}
+
+.modify-list {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.fetch-tracks-btn {
+    border-radius: 4px;
+    width: 90px;
+    height: 41px;
+    background-color: #06a4b6;
+    text-decoration: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    text-align: center;
+    margin-left: 4px;
 }

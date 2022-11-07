@@ -14,6 +14,14 @@ nameInput.addEventListener("keypress", function (event) {
     }
 });
 
+var nameInput = document.getElementById("search-by-track-input-three");
+nameInput.addEventListener("keypress", function (event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        document.getElementById("search-by-track-btn-three").click();
+    }
+});
+
 window.onload = function () {
     getAllGenres();
     loadAllCustomPlaylists('name');
@@ -23,6 +31,7 @@ var fetchedTracks = [];
 var customPlaylistTracks = [];
 var sortByShow = false;
 var rootApiPath = '/api'
+var fetchedPlaylistTracksList = []
 
 async function searchByTrackName(sortParam) {
 
@@ -153,7 +162,7 @@ function populateTrackData(trackList) {
 
 function resetSearchResult() {
     let galleryContainer = document.getElementById('genre-tracks-one')
-    galleryContainer.innerHTML = "";
+    galleryContainer.innerText = "";
 }
 
 function getAllGenres() {
@@ -342,11 +351,10 @@ function searchByTrackNameForPlaylist() {
             .then(tracks => tracks.json()
                 .then(tracks => {
                     if (tracks.length) {
-                        console.log(tracks)
                         fetchedTracks = [...tracks];
                         populateTrackDataTwo(tracks)
                     } else {
-                        document.getElementById("search-by-track-input").value = '';
+                        document.getElementById("search-by-track-input-two").value = '';
                         alert('No track found with entered details!')
                         resetSearchResultTwo();
                     }
@@ -368,10 +376,6 @@ function populateTrackDataTwo(trackList) {
     label.appendChild(document.createTextNode('Found matched tracks: ' + trackList.length + '\u00A0'));
     primaryContainer.appendChild(label);
 
-    // let songsAdded = document.createElement('span');
-    // songsAdded.appendChild(document.createTextNode('Tracks added to the playlist: ' + customPlaylistTracks.length));
-    // primaryContainer.appendChild(songsAdded);
-
     trackList.forEach(track => {
 
         let trackContainer = document.createElement('button');
@@ -381,7 +385,7 @@ function populateTrackDataTwo(trackList) {
             updatePlaylistTracks(track);
             trackContainer.classList.add('checked')
         }
-        console.log(customPlaylistTracks);
+
         customPlaylistTracks.forEach(element => {
             if (element.track_id === track.track_id) {
                 trackContainer.classList.add('checked')
@@ -478,7 +482,6 @@ function updatePlaylistTracks(track) {
     } else {
         customPlaylistTracks.push(track)
     }
-    console.log(customPlaylistTracks)
 }
 
 async function createPlaylist() {
@@ -499,7 +502,6 @@ async function createPlaylist() {
             tracks.push(trackItem);
         })
         request.tracks = [...tracks];
-        console.log(request)
         await postData(rootApiPath + '/customPlaylist', request)
             .then((data) => {
                 alert(data)
@@ -665,7 +667,6 @@ function sort(param) {
 }
 
 function sortTrack(sortParam) {
-    console.log(sortParam)
     resetSearchResult();
     searchByTrackName(sortParam);
 }
@@ -675,7 +676,7 @@ function resetPlaylistSpace() {
     let galleryContainer = document.getElementById('playlist-details')
     let filteredSection = document.getElementById('primary-container-3');
     let label = document.getElementById('custom-list-count');
-    label.innerHTML = "";
+    label.innerText = "";
     if (filteredSection || label) {
         filteredSection.appendChild(document.createTextNode(""));
 
@@ -696,7 +697,6 @@ function getTracksForPlaylist(playlistName, id) {
     )
         .then(tracks => tracks.json()
             .then(tracks => {
-                console.log(tracks)
                 populateTracksCustomplaylist(tracks, id);
             }))
         .catch(err => {
@@ -712,7 +712,7 @@ function populateTracksCustomplaylist(allTracks, id) {
     } else {
         let primaryContainer = document.createElement('div')
         primaryContainer.id = 'p-container-' + id;
-        primaryContainer.innerHTML = '';
+        primaryContainer.innerText = '';
         playlistContainer.appendChild(primaryContainer);
 
         allTracks.forEach(track => {
@@ -793,4 +793,311 @@ function populateTracksCustomplaylist(allTracks, id) {
         playlistContainer.insertBefore(primaryContainer, btnDiv);
     }
 
+}
+
+function fetchPlaylistTracks() {
+
+    let playlistName = document.getElementById("playlist-input").value
+    if (playlistName === undefined || playlistName === '') {
+        alert('Please provide playlist name to search!')
+        return;
+    }
+    const url = rootApiPath + '/customPlaylist/tracks/' + playlistName;
+    const newUrl = url;
+
+    fetch(
+        newUrl,
+        {
+            headers: { "Content-Type": "application/json" },
+            method: "GET"
+        }
+    )
+        .then(tracks => tracks.json()
+            .then(tracks => {
+                if (tracks.length === 0) {
+                    alert('No tracks found!')
+                } else {
+                    populateListTracks(tracks);
+                }
+
+            }))
+        .catch(err => {
+            console.log('Error fetching the tracks for custom playlist', err)
+        })
+}
+function populateListTracks(tracks) {
+    fetchedPlaylistTracksList = [];
+    let primaryContainer = document.getElementById('list-tracks');
+
+    if (tracks.length) {
+        labelSpan = document.createElement('span');
+        labelSpan.classList.add('track-name-label')
+        labelSpan.appendChild(document.createTextNode('Select tracks to delete: '));
+        primaryContainer.appendChild(labelSpan)
+    }
+
+    tracks.forEach(track => {
+
+        fetchedPlaylistTracksList.push(track);
+        let trackContainer = document.createElement('button');
+        trackContainer.classList.add('track-container-extra')
+        trackContainer.onclick = function () {
+            deleteTrack(track)
+            trackContainer.classList.add('checked-track')
+            trackContainer.classList.remove('track-container-extra')
+        }
+
+        let trackName = document.createElement('div');
+        trackName.id = 'track-name';
+        trackName.classList.add('track-name')
+
+        let trackNameLabel = document.createElement('span');
+        trackNameLabel.classList.add('track-name-label')
+        trackNameLabel.appendChild(document.createTextNode('Track Name: '));
+
+        let trackNameValue = document.createElement('span');
+        trackNameValue.classList.add('track-name-label-value')
+        trackNameValue.appendChild(document.createTextNode(track.track));
+        trackName.appendChild(trackNameLabel);
+        trackName.appendChild(trackNameValue);
+
+        let trackArtist = document.createElement('div');
+        trackArtist.id = 'track-artist';
+        trackArtist.classList.add('track-artist')
+
+        let artistNameLabel = document.createElement('span');
+        artistNameLabel.classList.add('artist-name-label')
+        artistNameLabel.appendChild(document.createTextNode('Artist Name: '));
+        let artistNameValue = document.createElement('span');
+        artistNameValue.classList.add('artist-name-label-value')
+        artistNameValue.appendChild(document.createTextNode(track.artist));
+        trackArtist.appendChild(artistNameLabel);
+        trackArtist.appendChild(artistNameValue);
+
+        let trackAlbum = document.createElement('div');
+        trackAlbum.id = 'track-album';
+        trackAlbum.classList.add('track-album')
+
+        let albumNameLabel = document.createElement('span');
+        albumNameLabel.classList.add('album-name-label')
+        albumNameLabel.appendChild(document.createTextNode('Album Name: '));
+        let albumNameValue = document.createElement('span');
+        albumNameValue.classList.add('album-name-label-value')
+        albumNameValue.appendChild(document.createTextNode(track.album));
+        trackAlbum.appendChild(albumNameLabel);
+        trackAlbum.appendChild(albumNameValue);
+
+
+        let trackDuration = document.createElement('div');
+        trackDuration.id = 'track-duration';
+        trackDuration.classList.add('track-duration')
+
+        let durationNameLabel = document.createElement('span');
+        durationNameLabel.classList.add('duration-name-label')
+        durationNameLabel.appendChild(document.createTextNode('Duration: '));
+        let durationNameValue = document.createElement('span');
+        durationNameValue.classList.add('duration-name-label-value')
+        durationNameValue.appendChild(document.createTextNode(track.duration));
+        trackDuration.appendChild(durationNameLabel);
+        trackDuration.appendChild(durationNameValue);
+
+
+        trackContainer.appendChild(trackName);
+        trackContainer.appendChild(trackArtist);
+        trackContainer.appendChild(trackAlbum);
+        trackContainer.appendChild(trackDuration);
+        primaryContainer.appendChild(trackContainer);
+
+
+    })
+
+}
+
+function deleteTrack(track) {
+    let finalList = fetchedPlaylistTracksList.filter(trackSaved => {
+        return trackSaved.id !== track.id;
+    })
+    fetchedPlaylistTracksList = finalList;
+}
+
+function searchByTrackNameForPlaylistThree() {
+    let trackNameInput = document.getElementById("search-by-track-input-three").value;
+
+    if (trackNameInput.length === 0) {
+        resetSearchResultThree();
+        return;
+    }
+
+    if (trackNameInput !== '' && trackNameInput.length > 0) {
+        const url = rootApiPath + '/track/findByAll' + '/' + trackNameInput;
+        const newUrl = url;
+
+        fetch(
+            newUrl,
+            {
+                headers: { "Content-Type": "application/json" },
+                method: "GET"
+            }
+        )
+            .then(tracks => tracks.json()
+                .then(tracks => {
+                    if (tracks.length) {
+                        fetchedTracks = [...tracks];
+                        populateTrackDataThree(tracks)
+                    } else {
+                        document.getElementById("search-by-track-input-three").value = '';
+                        alert('No track found with entered details!')
+                        resetSearchResultThree();
+                    }
+                }))
+            .catch(err => {
+                console.log('Error fetching the results', err)
+            })
+    }
+}
+
+function populateTrackDataThree(trackList) {
+
+    resetSearchResultThree();
+    let maintrackContainer = document.getElementById('matched-tracks-three');
+    let primaryContainer = document.createElement('div');
+    primaryContainer.id = 'primary-container-4';
+
+    let label = document.createElement('span');
+    label.appendChild(document.createTextNode('Found matched tracks: ' + trackList.length + '\u00A0'));
+    primaryContainer.appendChild(label);
+
+    trackList.forEach(track => {
+
+        let trackContainer = document.createElement('button');
+
+        trackContainer.id = track.track_id;
+        trackContainer.onclick = function () {
+            addPlayListTracks(track);
+            trackContainer.classList.add('checked')
+        }
+        customPlaylistTracks.forEach(element => {
+            if (element.track_id === track.track_id) {
+                trackContainer.classList.add('checked')
+            }
+        })
+        trackContainer.classList.add('track-container')
+
+        let trackName = document.createElement('div');
+        trackName.id = 'track-name';
+        trackName.classList.add('track-name')
+
+        let trackNameLabel = document.createElement('span');
+        trackNameLabel.classList.add('track-name-label')
+        trackNameLabel.appendChild(document.createTextNode('Track Name: '));
+
+        let trackNameValue = document.createElement('span');
+        trackNameValue.classList.add('track-name-label-value')
+        trackNameValue.appendChild(document.createTextNode(track.track_title));
+        trackName.appendChild(trackNameLabel);
+        trackName.appendChild(trackNameValue);
+
+        let trackArtist = document.createElement('div');
+        trackArtist.id = 'track-artist';
+        trackArtist.classList.add('track-artist')
+
+        let artistNameLabel = document.createElement('span');
+        artistNameLabel.classList.add('artist-name-label')
+        artistNameLabel.appendChild(document.createTextNode('Artist Name: '));
+        let artistNameValue = document.createElement('span');
+        artistNameValue.classList.add('artist-name-label-value')
+        artistNameValue.appendChild(document.createTextNode(track.artist_name));
+        trackArtist.appendChild(artistNameLabel);
+        trackArtist.appendChild(artistNameValue);
+
+        let trackAlbum = document.createElement('div');
+        trackAlbum.id = 'track-album';
+        trackAlbum.classList.add('track-album')
+
+        let albumNameLabel = document.createElement('span');
+        albumNameLabel.classList.add('album-name-label')
+        albumNameLabel.appendChild(document.createTextNode('Album Name: '));
+        let albumNameValue = document.createElement('span');
+        albumNameValue.classList.add('album-name-label-value')
+        albumNameValue.appendChild(document.createTextNode(track.album_title));
+        trackAlbum.appendChild(albumNameLabel);
+        trackAlbum.appendChild(albumNameValue);
+
+        let trackDuration = document.createElement('div');
+        trackDuration.id = 'track-duration';
+        trackDuration.classList.add('track-duration')
+
+        let durationNameLabel = document.createElement('span');
+        durationNameLabel.classList.add('duration-name-label')
+        durationNameLabel.appendChild(document.createTextNode('Duration: '));
+        let durationNameValue = document.createElement('span');
+        durationNameValue.classList.add('duration-name-label-value')
+        durationNameValue.appendChild(document.createTextNode(track.track_duration));
+        trackDuration.appendChild(durationNameLabel);
+        trackDuration.appendChild(durationNameValue);
+
+        trackContainer.appendChild(trackName);
+        trackContainer.appendChild(trackArtist);
+        trackContainer.appendChild(trackAlbum);
+        trackContainer.appendChild(trackDuration);
+        primaryContainer.appendChild(trackContainer);
+    })
+
+    maintrackContainer.appendChild(primaryContainer);
+
+}
+
+function resetSearchResultThree() {
+    let matchedTracks = document.getElementById('matched-tracks-three')
+    let trackSection = document.getElementById('primary-container-4');
+    if (trackSection) {
+        trackSection.appendChild(document.createTextNode(""));
+        matchedTracks.removeChild(trackSection);
+    }
+}
+
+function addPlayListTracks(track) {
+    let matchingTrack = fetchedPlaylistTracksList.find(trackStored => {
+        return track.track_id === trackStored.id
+    })
+    if (matchingTrack == undefined) {
+        let trackItem = {};
+        trackItem.id = track.track_id;
+        trackItem.track = track.track_title;
+        trackItem.duration = track.track_duration;
+        trackItem.album = track.album_title;
+        trackItem.artist = track.artist_name;
+        fetchedPlaylistTracksList.push(trackItem);
+    }
+
+}
+
+async function modifyPlaylist() {
+    let playlistName = document.getElementById("playlist-input").value
+    if (playlistName === undefined || playlistName === '') {
+        alert('Please provide playlist name to search!')
+        return;
+    }
+    let request = {};
+    request.name = playlistName;
+    request.tracks = [...fetchedPlaylistTracksList];
+    await putData(rootApiPath + '/customPlaylist/modify', request)
+        .then((data) => {
+            alert(data.message);
+            location.reload();
+        })
+        .catch(err => {
+            alert(err);
+        });
+}
+
+async function putData(url = '', data = {}) {
+    const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+    return response.json();
 }
